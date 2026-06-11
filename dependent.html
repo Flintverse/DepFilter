@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dependent Filters – Findter Filter &amp; Search</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ff:'Inter',-apple-system,BlinkMacSystemFont,'San Francisco','Segoe UI',sans-serif;
+  --bg:rgba(241,241,241,1);--sf:#fff;--sf-hov:rgba(247,247,247,1);--sf-act:rgba(243,243,243,1);
+  --fill:#303030;--fill-hov:#1a1a1a;--fill-t:rgba(0,0,0,.02);
+  --text:rgba(48,48,48,1);--text2:rgba(97,97,97,1);--textd:rgba(181,181,181,1);
+  --lnk:rgba(0,91,211,1);--bdr:rgba(227,227,227,1);--bdr-foc:rgba(0,91,211,1);--crit:rgba(181,38,11,1);
+  --r1:4px;--r2:8px;--r3:12px;
+  --sh1:0px 1px 0px 0px rgba(26,26,26,.07);
+  --sh3:0px 4px 6px -2px rgba(26,26,26,.2);
+  --shbtn:0px -1px 0px 0px #b5b5b5 inset,0px 0px 0px 1px rgba(0,0,0,.1) inset,0px .5px 0px 1.5px #fff inset;
+  --shbtn-hov:0px 1px 0px 0px #ebebeb inset,-1px 0px 0px 0px #ebebeb inset,1px 0px 0px 0px #ebebeb inset,0px -1px 0px 0px #ccc inset;
+  --shbtnp:0px -1px 0px 1px rgba(0,0,0,.8) inset,0px 0px 0px 1px rgba(48,48,48,1) inset,0px .5px 0px 1.5px rgba(255,255,255,.25) inset;
+  --shbtnp-hov:0px 1px 0px 0px rgba(255,255,255,.24) inset,1px 0px 0px 0px rgba(255,255,255,.2) inset,-1px 0px 0px 0px rgba(255,255,255,.2) inset,0px -1px 0px 0px #000 inset;
+}
+html,body{font-family:var(--ff);background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;min-height:100vh}
+a{color:var(--lnk)}.hidden{display:none!important}
+
+/* Layout */
+.lay{display:flex;min-height:100vh}.main{flex:1;overflow-x:hidden;overflow-y:auto;height:100vh}
+.pg{max-width:960px;margin:0 auto;padding:24px}.pg-wide{max-width:1200px;margin:0 auto;padding:24px}
+
+/* Sidebar */
+.sb{width:248px;background:var(--sf);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;transition:width .25s;min-height:100vh;position:sticky;top:0;height:100vh;overflow:hidden}
+.sb.col{width:56px}
+.sb-hd{padding:12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr);gap:8px;overflow:hidden;flex-shrink:0}
+.sb-logo{width:28px;height:28px;border-radius:6px;background:var(--fill);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-title{font-size:13px;font-weight:650;color:var(--text);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.sb-tgl{width:28px;height:28px;border:none;background:transparent;cursor:pointer;border-radius:var(--r1);display:flex;align-items:center;justify-content:center;color:var(--text2);flex-shrink:0}
+.sb-tgl:hover{background:var(--sf-hov)}
+.sb-nav{padding:8px;display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto}
+.nav-btn{width:100%;border:none;background:transparent;cursor:pointer;padding:6px 12px;border-radius:var(--r2);font-family:var(--ff);font-size:13px;font-weight:450;color:var(--text2);text-align:left;display:flex;align-items:center;overflow:hidden;transition:background .1s,color .1s;white-space:nowrap}
+.nav-btn:hover:not([disabled]){background:var(--sf-hov);color:var(--text)}
+.nav-btn.act{background:var(--sf-act)!important;color:var(--text)!important;font-weight:650}
+.nav-btn[disabled]{color:var(--textd)!important;cursor:not-allowed}
+.nav-lbl{overflow:hidden;text-overflow:ellipsis}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:6px 16px;height:32px;border-radius:var(--r2);font-family:var(--ff);font-size:13px;font-weight:550;cursor:pointer;border:none;white-space:nowrap;transition:box-shadow .1s,background .1s;text-decoration:none}
+.btn-p{background:var(--fill);color:#fff;box-shadow:var(--shbtnp)}.btn-p:hover{background:var(--fill-hov);box-shadow:var(--shbtnp-hov)}
+.btn-s{background:var(--sf);color:var(--text);box-shadow:var(--shbtn)}.btn-s:hover{box-shadow:var(--shbtn-hov)}
+.ibtn{width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--r2);cursor:pointer;border:1px solid var(--bdr);background:var(--sf);color:var(--text2);box-shadow:var(--sh1);transition:background .1s,color .1s,border-color .1s;flex-shrink:0}
+.ibtn:hover{background:var(--sf-hov)}.ibtn-del:hover{background:rgba(181,38,11,.06);color:var(--crit);border-color:rgba(181,38,11,.3)}
+.ibtn-bare{border:none!important;box-shadow:none!important;background:transparent!important}
+.back-a{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--r2);text-decoration:none;border:1px solid var(--bdr);background:var(--sf);color:var(--text2);box-shadow:var(--sh1);flex-shrink:0;transition:background .1s}
+.back-a:hover{background:var(--sf-hov)}
+
+/* Forms */
+.inp{width:100%;border:1px solid var(--bdr);border-radius:var(--r2);padding:7px 12px;font-family:var(--ff);font-size:13px;color:var(--text);background:var(--sf);outline:none;transition:border-color .1s,box-shadow .1s}
+.inp::placeholder{color:var(--textd)}.inp:focus{border-color:var(--bdr-foc);box-shadow:0 0 0 3px rgba(0,91,211,.2)}
+.inp.err{border-color:var(--crit)!important;box-shadow:0 0 0 3px rgba(181,38,11,.15)!important}
+.sel{width:100%;border:1px solid var(--bdr);border-radius:var(--r2);padding:7px 36px 7px 12px;font-family:var(--ff);font-size:13px;color:var(--text);background:var(--sf);outline:none;appearance:none;-webkit-appearance:none;cursor:pointer;transition:border-color .1s,box-shadow .1s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23616161' fill-rule='evenodd' d='M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:16px}
+.sel:focus{border-color:var(--bdr-foc);box-shadow:0 0 0 3px rgba(0,91,211,.2)}
+.flbl{font-size:13px;font-weight:550;color:var(--text);display:block;margin-bottom:4px}
+.fhint{font-size:12px;color:var(--text2);margin-top:3px;line-height:1.4}
+
+/* Cards */
+.card{background:var(--sf);border-radius:var(--r2);box-shadow:var(--sh3);overflow:hidden}
+.card-hd{padding:16px;border-bottom:1px solid var(--bdr)}.card-hd-ttl{font-size:13px;font-weight:650}
+.card-hd-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.card-bd{padding:16px;display:flex;flex-direction:column;gap:16px}
+
+/* Toggle */
+.tgl{position:relative;display:inline-block;width:44px;height:24px;border:none;padding:0;cursor:pointer;border-radius:12px;outline:none;appearance:none;-webkit-appearance:none;transition:background .2s;flex-shrink:0;vertical-align:middle}
+.tgl:focus-visible{box-shadow:0 0 0 3px rgba(0,91,211,.25)}.tgl.on{background:var(--fill)}.tgl.off{background:rgba(204,204,204,1)}
+.tgl-th{display:block;position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:transform .2s;pointer-events:none}
+.tgl.on .tgl-th{transform:translateX(20px)}
+
+/* Table */
+.tw{background:var(--sf);border-radius:var(--r2);box-shadow:var(--sh3);overflow:hidden}
+.dt{width:100%;border-collapse:collapse;font-size:13px}
+.dt thead tr{background:var(--fill-t);border-bottom:1px solid var(--bdr)}
+.dt thead th{padding:10px 16px;text-align:left;font-size:11px;font-weight:650;text-transform:uppercase;letter-spacing:.06em;color:var(--text2)}
+.dt tbody tr{border-bottom:1px solid var(--bdr)}.dt tbody tr:last-child{border-bottom:none}
+.dt tbody tr:hover{background:var(--sf-hov)}.dt td{padding:12px 16px;vertical-align:middle}
+
+/* Badges */
+.bdg-n{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--r1);font-size:12px;font-weight:550;background:rgba(0,0,0,.07);color:var(--text2)}
+.bdg-f{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--r1);font-size:12px;font-weight:550;background:#ddeeff;color:#005bd3}
+
+/* Banner */
+.bnr{border-radius:var(--r2);padding:12px 16px;display:flex;align-items:flex-start;gap:10px;font-size:13px;background:#e8f4fe;border:1px solid rgba(0,91,211,.2);color:#003d9c}
+
+/* Spacing & flex helpers */
+.mt3{margin-top:12px}.mt4{margin-top:16px}.mt5{margin-top:20px}
+.frow{display:flex;gap:8px}.fbe{justify-content:space-between;align-items:center}.fend{justify-content:flex-end}
+
+/* Icons */
+.ic{width:16px;height:16px;fill:currentColor;display:block;flex-shrink:0}
+
+/* Editor two-col */
+.editor-grid{display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:start}
+.editor-col{display:flex;flex-direction:column;gap:16px}
+
+/* Stage cards */
+.stage-card{background:var(--sf);border-radius:var(--r2);box-shadow:var(--sh3);overflow:hidden}
+.stage-hd{padding:10px 14px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px;background:var(--fill-t)}
+.stage-hd-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.stage-num{width:22px;height:22px;border-radius:50%;background:var(--fill);color:#fff;font-size:11px;font-weight:650;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stage-label-inp{border:none;background:transparent;font-family:var(--ff);font-size:13px;font-weight:650;color:var(--text);outline:none;flex:1;min-width:0;padding:2px 4px;border-radius:3px}
+.stage-label-inp:focus{background:rgba(0,91,211,.06);border-radius:3px}
+.stage-bd{padding:16px;display:flex;flex-direction:column;gap:14px}
+.stage-arrow{display:flex;align-items:center;justify-content:center;height:20px;color:var(--textd)}
+
+/* Routing box */
+.routing-box{background:rgba(0,91,211,.04);border:1px solid rgba(0,91,211,.15);border-radius:var(--r2);padding:12px;display:flex;flex-direction:column;gap:8px}
+.routing-lbl{font-size:12px;color:rgba(0,91,211,.8);font-weight:550;display:flex;align-items:center;gap:5px}
+
+/* Exception groups */
+.exc-group{border:1px solid var(--bdr);border-radius:var(--r2);padding:12px;background:var(--sf);display:flex;flex-direction:column;gap:10px}
+.exc-group+.exc-group{margin-top:8px}
+
+/* Value chips */
+.val-chips{display:flex;flex-wrap:wrap;gap:5px;padding:8px;background:var(--sf-hov);border:1px solid var(--bdr);border-radius:var(--r1);max-height:110px;overflow-y:auto}
+.val-chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:var(--r1);border:1px solid var(--bdr);background:var(--sf);font-size:12px;cursor:pointer;user-select:none;transition:background .1s,border-color .1s,color .1s}
+.val-chip:hover{background:var(--sf-hov)}
+.val-chip.sel{background:#ddeeff;border-color:#005bd3;color:#005bd3;font-weight:550}
+
+/* Placement checkboxes */
+.placement-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.placement-opt{display:flex;align-items:center;gap:8px;border:1px solid var(--bdr);border-radius:var(--r2);padding:10px 12px;cursor:pointer;font-size:13px;transition:border-color .1s,background .1s}
+.placement-opt:hover{background:var(--sf-hov)}
+.placement-opt.chk{border-color:var(--fill);background:rgba(48,48,48,.04)}
+.placement-opt input{accent-color:var(--fill);cursor:pointer;flex-shrink:0}
+
+/* Collection chips */
+.col-chips{display:flex;flex-wrap:wrap;gap:6px}
+.col-chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:var(--r1);border:1px solid var(--bdr);background:var(--sf);font-size:12px;cursor:pointer;user-select:none;transition:all .1s}
+.col-chip:hover{background:var(--sf-hov)}
+.col-chip.on{background:#ddeeff;border-color:#005bd3;color:#005bd3;font-weight:550}
+
+/* Preview */
+.prev-stage{background:var(--sf);border:1px solid var(--bdr);border-radius:var(--r2);overflow:hidden;margin-bottom:8px}
+.prev-stage:last-child{margin-bottom:0}
+.prev-stage-hd{padding:7px 12px;background:var(--fill-t);border-bottom:1px solid var(--bdr);font-size:11px;font-weight:650;text-transform:uppercase;letter-spacing:.06em;color:var(--text2)}
+.prev-stage-bd{padding:6px}
+.prev-opt{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:var(--r1);cursor:pointer;font-size:13px;transition:background .1s}
+.prev-opt:hover{background:var(--sf-hov)}.prev-opt.sel{background:var(--sf-act);font-weight:550}
+.prev-opt input[type=radio]{accent-color:var(--fill);cursor:pointer;flex-shrink:0}
+
+/* Empty state */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;gap:10px;color:var(--textd);text-align:center}
+
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:10px}
+</style>
+</head>
+<body>
+<div class="lay">
+
+  <aside class="sb" id="sidebar">
+    <div class="sb-hd">
+      <div class="sb-logo">Fd</div>
+      <span class="sb-title nav-lbl">Findter Filter &amp; Search</span>
+      <button class="sb-tgl" id="sidebar-toggle" title="Toggle sidebar"><span id="toggle-icon"></span></button>
+    </div>
+    <div class="sb-nav" id="nav"></div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ── LIST VIEW ──────────────────────────────── -->
+    <div id="view-list" class="pg">
+      <div class="frow fbe" style="margin-bottom:20px">
+        <h1 style="font-size:20px;font-weight:650">Dependent Filters</h1>
+        <div class="frow" style="gap:8px;align-items:center">
+          <a href="storefront.html" class="btn btn-s" id="sf-btn" target="_blank"></a>
+          <button class="btn btn-p" onclick="openEditor()" id="new-btn"></button>
+        </div>
+      </div>
+
+      <div class="tw">
+        <table class="dt">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Applied To</th>
+              <th style="width:80px;text-align:center">Steps</th>
+              <th style="width:120px">Status</th>
+              <th style="width:100px;text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="filter-tbody"></tbody>
+        </table>
+        <div style="padding:10px 16px;background:var(--fill-t);border-top:1px solid var(--bdr)">
+          <span id="filter-count" style="font-size:13px;font-weight:550;color:var(--text2)"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EDITOR VIEW ─────────────────────────────── -->
+    <div id="view-editor" class="hidden pg-wide">
+      <div class="frow" style="align-items:center;gap:12px;margin-bottom:24px">
+        <button class="back-a" id="back-btn" onclick="goBack()" title="Back"></button>
+        <h1 style="font-size:20px;font-weight:650" id="editor-title">New Filter Set</h1>
+      </div>
+
+      <div class="editor-grid">
+
+        <!-- Left: configuration -->
+        <div class="editor-col">
+
+          <!-- Settings -->
+          <div class="card">
+            <div class="card-hd"><p class="card-hd-ttl">Settings</p></div>
+            <div class="card-bd">
+              <div>
+                <label class="flbl" for="set-name">Filter Set Name</label>
+                <input class="inp" id="set-name" type="text" placeholder="e.g. Year › Make › Model" oninput="draft.name=this.value">
+              </div>
+              <div>
+                <label class="flbl">Show on</label>
+                <div class="placement-grid">
+                  <label class="placement-opt" id="lbl-hp">
+                    <input type="checkbox" id="chk-hp" onchange="draft.applyHP=this.checked;syncPlacement()"> Homepage
+                  </label>
+                  <label class="placement-opt" id="lbl-all">
+                    <input type="checkbox" id="chk-all" onchange="draft.applyAll=this.checked;syncPlacement()"> All Collections
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label class="flbl">Specific Collections</label>
+                <div class="col-chips" id="col-chips"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage cards -->
+          <div id="stages-list"></div>
+
+          <!-- Footer -->
+          <div class="frow fbe" style="padding-top:4px">
+            <button class="btn btn-s" id="add-stage-btn">
+              <span id="ic-plus-add"></span> Add Step
+            </button>
+            <div class="frow">
+              <button class="btn btn-s" onclick="goBack()">Cancel</button>
+              <button class="btn btn-p" id="save-btn" onclick="saveSet()">
+                <span id="ic-save"></span> Save Filter Set
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: preview -->
+        <div>
+          <div class="card" style="position:sticky;top:24px">
+            <div class="card-hd">
+              <p class="card-hd-ttl">Live Preview</p>
+              <p class="card-hd-sub">Click values to walk through the filter flow</p>
+            </div>
+            <div id="preview-body" style="padding:16px;min-height:180px"></div>
+            <div id="preview-footer" class="hidden" style="padding:10px 16px;background:var(--fill-t);border-top:1px solid var(--bdr)">
+              <span id="preview-count" style="font-size:13px;font-weight:550"></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="products.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const products = (typeof DEMO_PRODUCTS !== 'undefined') ? DEMO_PRODUCTS : [];
+
+const IC = {
+  chevL:`<svg class="ic" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.78 5.97a.75.75 0 0 1 0 1.06L8.81 10l2.97 2.97a.75.75 0 1 1-1.06 1.06l-3.5-3.5a.75.75 0 0 1 0-1.06l3.5-3.5a.75.75 0 0 1 1.06 0Z" fill="currentColor"/></svg>`,
+  chevR:`<svg class="ic" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.22 5.97a.75.75 0 0 0 0 1.06L11.19 10 8.22 12.97a.75.75 0 1 0 1.06 1.06l3.5-3.5a.75.75 0 0 0 0-1.06l-3.5-3.5a.75.75 0 0 0-1.06 0Z" fill="currentColor"/></svg>`,
+  chevD:`<svg class="ic" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.22 7.72a.75.75 0 0 1 1.06 0L10 11.44l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.78a.75.75 0 0 1 0-1.06Z" fill="currentColor"/></svg>`,
+  arrL:`<svg class="ic" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.56l2.72 2.72a.75.75 0 1 1-1.06 1.06l-4-4a.75.75 0 0 1 0-1.06l4-4a.75.75 0 0 1 1.06 1.06L5.56 9.25H16.25A.75.75 0 0 1 17 10Z" fill="currentColor"/></svg>`,
+  arrD:`<svg class="ic" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v10.44l2.72-2.72a.75.75 0 1 1 1.06 1.06l-4 4a.75.75 0 0 1-1.06 0l-4-4a.75.75 0 1 1 1.06-1.06l2.72 2.72V3.75A.75.75 0 0 1 10 3Z" fill="currentColor"/></svg>`,
+  edit:`<svg class="ic" viewBox="0 0 20 20"><path d="m11.47 3.87 4.7 4.7-8.5 8.5H3.01l-.01-4.63 8.47-8.57Zm1.06-1.06 1.94-1.94a1.5 1.5 0 0 1 2.12 0l2.55 2.55a1.5 1.5 0 0 1 0 2.12l-1.94 1.94-4.67-4.67Z" fill="currentColor"/></svg>`,
+  del:`<svg class="ic" viewBox="0 0 20 20"><path d="M14 4h3a1 1 0 0 1 0 2h-1v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6H3a1 1 0 0 1 0-2h3V2.5A1.5 1.5 0 0 1 7.5 1h5A1.5 1.5 0 0 1 14 2.5V4ZM8.5 2.5v1.5h3V2.5h-3ZM6 6v10h8V6H6Zm2 2.5a.5.5 0 0 1 1 0v5a.5.5 0 0 1-1 0v-5Zm3 0a.5.5 0 0 1 1 0v5a.5.5 0 0 1-1 0v-5Z" fill="currentColor"/></svg>`,
+  x:`<svg class="ic" viewBox="0 0 20 20"><path d="m11.06 10 3.22-3.22a.75.75 0 0 0-1.06-1.06L10 8.94 6.78 5.72a.75.75 0 0 0-1.06 1.06L8.94 10l-3.22 3.22a.75.75 0 1 0 1.06 1.06L10 11.06l3.22 3.22a.75.75 0 1 0 1.06-1.06L11.06 10Z" fill="currentColor"/></svg>`,
+  plus:`<svg class="ic" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5a.75.75 0 0 1 1.5 0v5.5h5.5A.75.75 0 0 1 17 10Z" fill="currentColor"/></svg>`,
+  chk:`<svg class="ic" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M15.78 5.97a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L3.97 10.72a.75.75 0 0 1 1.06-1.06l3 3 6.69-6.69a.75.75 0 0 1 1.06 0Z" fill="currentColor"/></svg>`,
+  info:`<svg style="width:20px;height:20px;fill:currentColor;display:block;flex-shrink:0" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7.25-3.25a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0v-.5a.75.75 0 0 1 .75-.75Zm0 2.5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5a.75.75 0 0 1 .75-.75Z" fill="currentColor"/></svg>`,
+  ext:`<svg class="ic" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 0 0-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 0 0 .75-.75v-4a.75.75 0 0 1 1.5 0v4A2.25 2.25 0 0 1 12.75 17h-8.5A2.25 2.25 0 0 1 2 14.75v-8.5A2.25 2.25 0 0 1 4.25 4h5a.75.75 0 0 1 0 1.5h-5ZM10 4.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0V6.56l-3.97 3.97a.75.75 0 0 1-1.06-1.06L13.44 5.5H10.75A.75.75 0 0 1 10 4.75Z" fill="currentColor"/></svg>`,
+};
+
+const SOURCES = [
+  {value:'year',label:'Year'},{value:'make',label:'Make'},{value:'model',label:'Model'},
+  {value:'collection',label:'Collection / Category'},{value:'vendor',label:'Vendor / Brand'},
+  {value:'color',label:'Color'},{value:'size',label:'Size'},{value:'type',label:'Product Type'},
+];
+const STORAGE_KEY = 'findterDependentFilters';
+
+// ── State ────────────────────────────────────────────────────────────────────
+let filters = [];
+let draft = null;
+let editingId = null;
+let previewSel = {};
+
+// ── Persistence ──────────────────────────────────────────────────────────────
+function saveToStorage(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(filters)); }
+function loadFromStorage(){
+  try { const s = localStorage.getItem(STORAGE_KEY); if(s) filters = JSON.parse(s); }
+  catch(e){ filters = []; }
+}
+
+// ── Sidebar ──────────────────────────────────────────────────────────────────
+const NAV=[
+  {id:'filter',label:'Filter'},{id:'search',label:'Search'},{id:'metafield',label:'Metafield'},
+  {id:'ymm',label:'Year Make Model'},{id:'grid',label:'Filter & Product Grid Design'},
+  {id:'settings',label:'Settings'},{id:'analytics',label:'Analytics'},{id:'advanced',label:'Advanced Features'},
+];
+const ENABLED=new Set(['filter','settings','metafield','ymm']);
+const ACTIVE='filter';
+let sbCol=false;
+
+function renderNav(){
+  $('nav').innerHTML=NAV.map(n=>{
+    const en=ENABLED.has(n.id),act=n.id===ACTIVE;
+    return `<button data-nav="${n.id}" ${en?'':'disabled'} class="nav-btn${act?' act':''}" title="${n.label}"><span class="nav-lbl">${escapeHtml(n.label)}</span></button>`;
+  }).join('');
+  $('nav').querySelectorAll('[data-nav]').forEach(b=>{
+    if(!ENABLED.has(b.dataset.nav))return;
+    b.onclick=()=>{
+      const v=b.dataset.nav;
+      if(v==='settings')location.href='index.html';
+      else if(v==='metafield')location.href='Metafield.html';
+      else if(v==='ymm')location.href='YearMakeModel.html';
+    };
+  });
+  updateSb();
+}
+function updateSb(){
+  $('sidebar').classList.toggle('col',sbCol);
+  $('sidebar').querySelectorAll('.nav-lbl').forEach(el=>el.classList.toggle('hidden',sbCol));
+  document.querySelector('.sb-title').classList.toggle('hidden',sbCol);
+  $('toggle-icon').innerHTML=sbCol?IC.chevR:IC.chevL;
+}
+$('sidebar-toggle').onclick=()=>{sbCol=!sbCol;updateSb();};
+
+// ── Views ────────────────────────────────────────────────────────────────────
+function showList(){ $('view-editor').classList.add('hidden'); $('view-list').classList.remove('hidden'); renderTable(); }
+function showEditor(){ $('view-list').classList.add('hidden'); $('view-editor').classList.remove('hidden'); }
+function goBack(){ draft=null; showList(); }
+
+// ── Table ────────────────────────────────────────────────────────────────────
+function renderTable(){
+  const tbody=$('filter-tbody');
+  if(!filters.length){
+    tbody.innerHTML=`<tr><td colspan="5"><div class="empty"><p style="font-size:13px;font-weight:550">No filter sets yet</p><p style="font-size:12px">Click "+ New Filter Set" to get started.</p></div></td></tr>`;
+    $('filter-count').textContent='0 filter sets';
+    return;
+  }
+  tbody.innerHTML=filters.map(f=>{
+    const parts=[f.applyHP?'Homepage':'',f.applyAll?'All Collections':'', ...(f.specificCols||[])].filter(Boolean);
+    return `<tr>
+      <td style="font-weight:550">${escapeHtml(f.name||'Untitled')}</td>
+      <td style="color:var(--text2);font-size:12px">${parts.length?escapeHtml(parts.join(', ')):'<em style="color:var(--textd)">Not applied</em>'}</td>
+      <td style="text-align:center"><span class="bdg-n">${f.stages.length}</span></td>
+      <td><div class="frow" style="align-items:center;gap:8px">
+        <button type="button" class="tgl ${f.enabled?'on':'off'}" onclick="toggleEnabled(${f.id})" title="${f.enabled?'Active':'Disabled'}"><span class="tgl-th"></span></button>
+        <span style="font-size:12px;color:var(--text2)">${f.enabled?'Active':'Off'}</span>
+      </div></td>
+      <td><div class="frow fend" style="gap:6px">
+        <button class="ibtn" onclick="openEditor(${f.id})" title="Edit">${IC.edit}</button>
+        <button class="ibtn ibtn-del" onclick="deleteFilter(${f.id})" title="Delete">${IC.del}</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  $('filter-count').textContent=`${filters.length} filter set${filters.length!==1?'s':''}`;
+}
+
+function toggleEnabled(id){ const f=filters.find(x=>x.id===id); if(f){f.enabled=!f.enabled;saveToStorage();renderTable();} }
+function deleteFilter(id){
+  if(!confirm('Delete this filter set?')) return;
+  filters=filters.filter(x=>x.id!==id); saveToStorage(); renderTable();
+}
+
+// ── Editor open/close ────────────────────────────────────────────────────────
+function openEditor(id=null){
+  editingId=id; previewSel={};
+  if(id){
+    draft=JSON.parse(JSON.stringify(filters.find(x=>x.id===id)));
+    $('editor-title').textContent=draft.name||'Edit Filter Set';
+  } else {
+    draft={id:Date.now(),name:'',applyHP:true,applyAll:false,specificCols:[],enabled:true,
+      stages:[{id:'s'+Date.now(),label:'Year',source:'year',expanded:true,conditions:[]}]};
+    $('editor-title').textContent='New Filter Set';
+  }
+  $('set-name').value=draft.name;
+  $('set-name').classList.remove('err');
+  syncPlacement(); renderColChips(); renderStages(); renderPreview();
+  $('back-btn').innerHTML=IC.arrL;
+  $('ic-plus-add').innerHTML=IC.plus;
+  $('ic-save').innerHTML='';
+  showEditor();
+}
+
+// ── Settings ─────────────────────────────────────────────────────────────────
+function syncPlacement(){
+  $('chk-hp').checked=!!draft.applyHP; $('chk-all').checked=!!draft.applyAll;
+  $('lbl-hp').classList.toggle('chk',!!draft.applyHP);
+  $('lbl-all').classList.toggle('chk',!!draft.applyAll);
+}
+function renderColChips(){
+  const all=[...new Set(products.map(p=>p.collection))].sort();
+  $('col-chips').innerHTML=all.map(c=>`<span class="col-chip${draft.specificCols.includes(c)?' on':''}" onclick="toggleCol('${escapeHtml(c)}')">${escapeHtml(c)}</span>`).join('');
+}
+function toggleCol(c){ const i=draft.specificCols.indexOf(c); if(i>-1)draft.specificCols.splice(i,1); else draft.specificCols.push(c); renderColChips(); }
+
+// ── Core routing logic ────────────────────────────────────────────────────────
+function getNextStageId(set, stageId, selectedVal){
+  const stage=set.stages.find(s=>s.id===stageId);
+  if(!stage) return null;
+  // Check per-value exceptions first
+  if(selectedVal && stage.conditions && stage.conditions.length){
+    const match=stage.conditions.find(c=>c.values.includes(selectedVal));
+    if(match) return match.nextStage||null;
+  }
+  // Use explicit defaultNext if set
+  if('defaultNext' in stage) return stage.defaultNext||null;
+  // Linear fallback: next stage in array
+  const idx=set.stages.findIndex(s=>s.id===stageId);
+  return (idx>=0 && idx<set.stages.length-1) ? set.stages[idx+1].id : null;
+}
+
+// ── Stage rendering ───────────────────────────────────────────────────────────
+function addStage(){
+  const used=new Set(draft.stages.map(s=>s.source));
+  const src=SOURCES.find(s=>!used.has(s.value))||SOURCES[draft.stages.length%SOURCES.length];
+  const newId='s'+Date.now();
+  draft.stages.push({id:newId,label:src.label,source:src.value,expanded:true,conditions:[]});
+  renderStages(); renderPreview();
+  setTimeout(()=>{ const el=document.querySelector('[data-stageid="'+newId+'"]'); if(el)el.scrollIntoView({behavior:'smooth',block:'center'}); },60);
+}
+function deleteStage(i){
+  if(draft.stages.length<=1){ alert('A filter set must have at least one step.'); return; }
+  const rmId=draft.stages[i].id;
+  draft.stages.splice(i,1);
+  draft.stages.forEach(s=>{ s.conditions&&s.conditions.forEach(c=>{ if(c.nextStage===rmId)c.nextStage=''; }); if(s.defaultNext===rmId)delete s.defaultNext; });
+  delete previewSel[rmId];
+  renderStages(); renderPreview();
+}
+function toggleStageExpand(i){ draft.stages[i].expanded=!draft.stages[i].expanded; renderStages(); }
+function removeCondition(si,ci){ draft.stages[si].conditions.splice(ci,1); renderStages(); renderPreview(); }
+function toggleCondVal(si,ci,v){
+  const arr=draft.stages[si].conditions[ci].values;
+  const i=arr.indexOf(v); if(i>-1)arr.splice(i,1); else arr.push(v);
+  renderStages(); renderPreview();
+}
+
+function renderStages(){
+  const list=$('stages-list');
+  list.innerHTML=draft.stages.map((st,si)=>{
+    const vals=[...new Set(products.map(p=>p[st.source]).filter(Boolean))].sort();
+    const isLast=si===draft.stages.length-1;
+    // Sources already used by every OTHER step — hidden from this step's dropdown
+    const takenSources=new Set(draft.stages.filter((_,i)=>i!==si).map(s=>s.source));
+    // Only steps that come AFTER this one are valid routing targets — prevents loops
+    const forwardStages=draft.stages.filter((_,i)=>i>si);
+    const forwardIds=new Set(forwardStages.map(s=>s.id));
+
+    // Silently fix any stale backward routing refs that may exist in old saved data
+    if('defaultNext' in st && st.defaultNext!=='' && !forwardIds.has(st.defaultNext)) delete st.defaultNext;
+    if(st.conditions) st.conditions.forEach(co=>{ if(co.nextStage!==''&&!forwardIds.has(co.nextStage)) co.nextStage=''; });
+
+    const hasExplicit='defaultNext' in st;
+
+    const defOpts=`
+      <option value="__auto" ${!hasExplicit?'selected':''}>Auto${isLast?' (end)':' → '+draft.stages[si+1].label}</option>
+      <option value="" ${hasExplicit&&st.defaultNext===''?'selected':''}>End filter</option>
+      ${forwardStages.map(s=>{
+        const n=draft.stages.indexOf(s)+1;
+        return `<option value="${s.id}" ${hasExplicit&&st.defaultNext===s.id?'selected':''}>Step ${n}: ${escapeHtml(s.label)}</option>`;
+      }).join('')}`;
+
+    const excHtml=st.conditions&&st.conditions.length?
+      `<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">`+
+      st.conditions.map((co,ci)=>`
+        <div class="exc-group">
+          <div class="frow fbe" style="align-items:flex-start;gap:6px">
+            <div style="flex:1">
+              <div style="font-size:11px;font-weight:650;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">If picks</div>
+              <div class="val-chips">
+                ${vals.map(v=>`<span class="val-chip${co.values.includes(v)?' sel':''}" data-chip data-si="${si}" data-ci="${ci}" data-v="${escapeHtml(v)}">${escapeHtml(v)}</span>`).join('')}
+              </div>
+            </div>
+            <button class="ibtn ibtn-del ibtn-bare" style="width:24px;height:24px;margin-top:16px;flex-shrink:0" data-rmcond data-si="${si}" data-ci="${ci}">${IC.x}</button>
+          </div>
+          <div class="frow" style="align-items:center;gap:8px;margin-top:8px">
+            <span style="font-size:12px;color:var(--text2);white-space:nowrap;flex-shrink:0">→ go to</span>
+            <select class="sel" style="flex:1" data-condsel data-si="${si}" data-ci="${ci}">
+              <option value="">End filter</option>
+              ${forwardStages.map(s=>{const n=draft.stages.indexOf(s)+1;return `<option value="${s.id}" ${co.nextStage===s.id?'selected':''}>Step ${n}: ${escapeHtml(s.label)}</option>`;}).join('')}
+            </select>
+          </div>
+        </div>`).join('')+`</div>`:'';
+
+    return `
+      <div class="stage-card" data-stageid="${st.id}">
+        <div class="stage-hd">
+          <div class="stage-hd-left">
+            <span class="stage-num">${si+1}</span>
+            <input class="stage-label-inp" value="${escapeHtml(st.label)}" data-labelinp data-si="${si}" oninput="draft.stages[${si}].label=this.value;renderPreview()" placeholder="Step name">
+            <span class="bdg-n" style="font-size:11px">${escapeHtml(SOURCES.find(s=>s.value===st.source)?.label||st.source)}</span>
+          </div>
+          <div class="frow" style="gap:4px">
+            <button class="ibtn ibtn-bare" data-exp data-si="${si}" style="color:var(--text2)">${st.expanded?IC.chevD:IC.chevR}</button>
+            ${draft.stages.length>1?`<button class="ibtn ibtn-del" data-del data-si="${si}">${IC.del}</button>`:''}
+          </div>
+        </div>
+        <div class="stage-bd" ${st.expanded?'':'style="display:none"'}>
+
+          <div>
+            <label class="flbl">Filters by</label>
+            <select class="sel" data-srcsel data-si="${si}">
+              ${SOURCES.filter(s=>!takenSources.has(s.value)||st.source===s.value).map(s=>`<option value="${s.value}" ${st.source===s.value?'selected':''}>${escapeHtml(s.label)}</option>`).join('')}
+            </select>
+          </div>
+
+          <div>
+            <div class="frow fbe" style="align-items:center;gap:8px">
+              <label class="flbl" style="margin:0;white-space:nowrap;flex-shrink:0">Next step</label>
+              <select class="sel" style="flex:1" data-defsel data-si="${si}">${defOpts}</select>
+            </div>
+            ${excHtml}
+            <button class="btn btn-s" style="margin-top:8px;height:28px;padding:0 10px;font-size:12px" data-addexc data-si="${si}">
+              ${IC.plus} Add rule
+            </button>
+          </div>
+
+        </div>
+      </div>
+      ${si<draft.stages.length-1?`<div class="stage-arrow">${IC.arrD}</div>`:''}`;
+  }).join('');
+
+  // Event delegation
+  list.onclick=e=>{
+    const chip=e.target.closest('[data-chip]');
+    if(chip){toggleCondVal(+chip.dataset.si,+chip.dataset.ci,chip.dataset.v);return;}
+    const addExc=e.target.closest('[data-addexc]');
+    if(addExc){ const si=+addExc.dataset.si; const nextFwd=draft.stages[si+1]?.id||''; draft.stages[si].conditions.push({values:[],nextStage:nextFwd}); renderStages();renderPreview();return; }
+    const rmCond=e.target.closest('[data-rmcond]');
+    if(rmCond){removeCondition(+rmCond.dataset.si,+rmCond.dataset.ci);return;}
+    const expBtn=e.target.closest('[data-exp]');
+    if(expBtn){toggleStageExpand(+expBtn.dataset.si);return;}
+    const delBtn=e.target.closest('[data-del]');
+    if(delBtn){deleteStage(+delBtn.dataset.si);return;}
+  };
+  list.onchange=e=>{
+    const src=e.target.closest('[data-srcsel]');
+    if(src){
+      const si=+src.dataset.si;
+      const oldLabel=SOURCES.find(s=>s.value===draft.stages[si].source)?.label;
+      const newSrc=SOURCES.find(s=>s.value===src.value);
+      // Auto-rename the step label only if the user hasn't customized it
+      if(oldLabel && newSrc && draft.stages[si].label===oldLabel) draft.stages[si].label=newSrc.label;
+      draft.stages[si].source=src.value;
+      clearPreviewBelow(si); renderStages();renderPreview();return;
+    }
+    const def=e.target.closest('[data-defsel]');
+    if(def){ const si=+def.dataset.si; const val=def.value; if(val==='__auto')delete draft.stages[si].defaultNext; else draft.stages[si].defaultNext=val; renderStages();renderPreview();return; }
+    const cond=e.target.closest('[data-condsel]');
+    if(cond){draft.stages[+cond.dataset.si].conditions[+cond.dataset.ci].nextStage=cond.value;renderPreview();return;}
+    const lbl=e.target.closest('[data-labelinp]');
+    if(lbl){draft.stages[+lbl.dataset.si].label=lbl.value;renderPreview();return;}
+  };
+}
+
+// ── Preview ───────────────────────────────────────────────────────────────────
+function clearPreviewBelow(fromIdx){
+  draft.stages.slice(fromIdx).forEach(s=>delete previewSel[s.id]);
+}
+
+function handlePreviewSelect(stageId, val){
+  previewSel[stageId]=val;
+  // Clear downstream selections
+  const seen=new Set(); let curId=getNextStageId(draft,stageId,val);
+  while(curId&&!seen.has(curId)){ seen.add(curId); delete previewSel[curId]; curId=getNextStageId(draft,curId,previewSel[curId]); }
+  renderPreview();
+}
+
+function renderPreview(){
+  if(!draft||!draft.stages.length){
+    $('preview-body').innerHTML=`<div class="empty"><p style="font-size:12px">Add a step to see the preview.</p></div>`;
+    $('preview-footer').classList.add('hidden'); return;
+  }
+  let html=''; let curId=draft.stages[0].id; const seen=new Set(); let depth=0;
+  while(curId&&!seen.has(curId)&&depth<20){
+    seen.add(curId); depth++;
+    const st=draft.stages.find(s=>s.id===curId); if(!st) break;
+    const vals=[...new Set(products.map(p=>p[st.source]).filter(Boolean))].sort();
+    const sel=previewSel[curId]||null;
+    html+=`<div class="prev-stage">
+      <div class="prev-stage-hd">${escapeHtml(st.label)}</div>
+      <div class="prev-stage-bd">
+        ${vals.map(v=>`<label class="prev-opt${sel===v?' sel':''}"><input type="radio" name="pv-${curId}" ${sel===v?'checked':''} onchange="handlePreviewSelect('${curId}','${escapeHtml(v)}')">${escapeHtml(v)}</label>`).join('')}
+      </div></div>`;
+    if(!sel) break;
+    curId=getNextStageId(draft,curId,sel);
+  }
+  // Count filtered products
+  let filtered=[...products]; let wcId=draft.stages[0].id; const wc=new Set();
+  while(wcId&&!wc.has(wcId)){wc.add(wcId);const st=draft.stages.find(s=>s.id===wcId);if(!st)break;const sel=previewSel[wcId];if(sel)filtered=filtered.filter(p=>String(p[st.source])===String(sel));else break;wcId=getNextStageId(draft,wcId,sel);}
+  const anySelected=Object.keys(previewSel).length>0;
+  $('preview-body').innerHTML=html;
+  if(anySelected){ $('preview-footer').classList.remove('hidden'); $('preview-count').textContent=`${filtered.length} product${filtered.length!==1?'s':''} match`; }
+  else $('preview-footer').classList.add('hidden');
+}
+
+// ── Save ──────────────────────────────────────────────────────────────────────
+function saveSet(){
+  draft.name=($('set-name').value||'').trim();
+  if(!draft.name){ $('set-name').classList.add('err'); $('set-name').focus(); return; }
+  $('set-name').classList.remove('err');
+  if(editingId){ const i=filters.findIndex(x=>x.id===editingId); if(i>-1)filters[i]=draft; else filters.push(draft); }
+  else filters.push(draft);
+  saveToStorage();
+  const btn=$('save-btn'), prev=btn.innerHTML;
+  btn.innerHTML=IC.chk+' Saved';
+  setTimeout(()=>{ btn.innerHTML=prev; goBack(); },800);
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+loadFromStorage();
+$('sf-btn').innerHTML=IC.ext+' Storefront';
+$('new-btn').innerHTML=IC.plus+' New Filter Set';
+$('add-stage-btn').onclick=()=>addStage();
+renderNav();
+showList();
+</script>
+</body>
+</html>

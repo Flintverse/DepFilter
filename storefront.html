@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoParts Store – Storefront Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#f4f4f5;color:#1a1a1a;font-size:14px;line-height:1.5;min-height:100vh}
+.hidden{display:none!important}
+
+/* Header */
+.sf-header{background:#fff;border-bottom:1px solid #e5e7eb;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.sf-logo{font-size:17px;font-weight:700;color:#111;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
+.sf-logo-dot{width:8px;height:8px;border-radius:50%;background:#e63946;display:inline-block}
+.sf-header-right{display:flex;align-items:center;gap:12px}
+.sf-page-sel{border:1px solid #d1d5db;border-radius:7px;padding:5px 30px 5px 10px;font-family:inherit;font-size:13px;color:#374151;background:#fff;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%236b7280' fill-rule='evenodd' d='M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:14px;outline:none}
+.sf-page-sel:focus{border-color:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,.2)}
+.admin-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#6b7280;text-decoration:none;padding:5px 10px;border:1px solid #e5e7eb;border-radius:6px;transition:background .1s}
+.admin-link:hover{background:#f9fafb}
+.reload-note{font-size:11px;color:#9ca3af;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:4px 10px}
+
+/* Layout */
+.sf-body{display:grid;grid-template-columns:280px 1fr;gap:24px;padding:24px;max-width:1280px;margin:0 auto;align-items:start}
+
+/* Filter sidebar */
+.filter-sidebar{background:#fff;border-radius:10px;border:1px solid #e5e7eb;overflow:hidden;position:sticky;top:76px}
+.filter-sidebar-hd{padding:16px;border-bottom:1px solid #f3f4f6}
+.filter-sidebar-hd h2{font-size:14px;font-weight:650;color:#111;margin-bottom:1px}
+.filter-sidebar-hd p{font-size:12px;color:#6b7280}
+.filter-sidebar-bd{padding:12px 0}
+
+/* No filter notice */
+.no-filter{padding:20px;text-align:center;color:#9ca3af}
+.no-filter p{font-size:13px;line-height:1.5}
+.no-filter a{color:#3b82f6;text-decoration:none}
+
+/* Completed step summary */
+.filter-summary{padding:8px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f3f4f6}
+.filter-summary:last-of-type{border-bottom:none}
+.filter-summary-label{font-size:11px;font-weight:550;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;min-width:52px;flex-shrink:0}
+.filter-summary-val{font-size:13px;font-weight:550;color:#111;flex:1}
+.filter-clear-btn{width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:4px;border:none;background:transparent;cursor:pointer;color:#9ca3af;transition:background .1s,color .1s;flex-shrink:0}
+.filter-clear-btn:hover{background:#fee2e2;color:#ef4444}
+.filter-divider{height:1px;background:#f3f4f6;margin:4px 0}
+
+/* Active step */
+.filter-step{padding:12px 16px}
+.filter-step-lbl{font-size:11px;font-weight:650;color:#3b82f6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.filter-step-lbl::before{content:'';width:6px;height:6px;background:#3b82f6;border-radius:50%;display:inline-block;flex-shrink:0}
+.filter-opts{display:flex;flex-direction:column;gap:2px}
+.filter-opt{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;cursor:pointer;transition:background .1s;font-size:13px;color:#374151}
+.filter-opt:hover{background:#eff6ff}
+.filter-opt.active{background:#eff6ff;color:#1d4ed8;font-weight:550}
+.filter-opt input[type=radio]{accent-color:#3b82f6;cursor:pointer;flex-shrink:0;width:15px;height:15px}
+
+/* Reset button */
+.filter-reset{display:flex;padding:12px 16px;border-top:1px solid #f3f4f6}
+.filter-reset button{width:100%;padding:8px;border-radius:7px;border:1px solid #e5e7eb;background:#fff;font-family:inherit;font-size:13px;color:#6b7280;cursor:pointer;transition:background .1s,border-color .1s}
+.filter-reset button:hover{background:#fef2f2;border-color:#fca5a5;color:#ef4444}
+
+/* Products area */
+.products-area{}
+.products-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.products-count{font-size:14px;color:#374151}
+.products-count strong{color:#111;font-weight:650}
+.clear-filters-btn{font-size:13px;color:#3b82f6;background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .1s}
+.clear-filters-btn:hover{background:#eff6ff}
+.products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+/* Product card */
+.prod-card{background:#fff;border-radius:10px;border:1px solid #e5e7eb;overflow:hidden;transition:box-shadow .15s,border-color .15s}
+.prod-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);border-color:#d1d5db}
+.prod-img{aspect-ratio:1;background:linear-gradient(135deg,#f3f4f6 0%,#e5e7eb 100%);display:flex;align-items:center;justify-content:center;color:#d1d5db}
+.prod-img svg{width:40px;height:40px}
+.prod-body{padding:12px}
+.prod-vendor{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:550;background:#f3f4f6;color:#6b7280;margin-bottom:5px}
+.prod-title{font-size:13px;font-weight:550;color:#111;line-height:1.4;margin-bottom:4px}
+.prod-meta{font-size:11px;color:#9ca3af;margin-bottom:8px}
+.prod-footer{display:flex;align-items:center;justify-content:space-between}
+.prod-price{font-size:15px;font-weight:650;color:#111}
+.prod-add{padding:5px 12px;border-radius:6px;border:1px solid #e5e7eb;background:#fff;font-family:inherit;font-size:12px;font-weight:550;color:#374151;cursor:pointer;transition:background .1s,border-color .1s}
+.prod-add:hover{background:#f9fafb;border-color:#d1d5db}
+
+/* No results */
+.no-results{grid-column:1/-1;padding:60px 20px;text-align:center;color:#9ca3af}
+.no-results p{font-size:14px;margin-top:8px}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:10px}
+</style>
+</head>
+<body>
+
+<header class="sf-header">
+  <div class="sf-logo">
+    <span class="sf-logo-dot"></span>
+    AutoParts Store
+    <span style="font-size:11px;color:#9ca3af;font-weight:450;background:#f3f4f6;border-radius:4px;padding:2px 7px;margin-left:4px">Storefront Preview</span>
+  </div>
+  <div class="sf-header-right">
+    <span class="reload-note">Opens filter sets saved in Admin</span>
+    <select class="sf-page-sel" id="page-sel" onchange="changePage(this.value)">
+      <option value="hp">Homepage</option>
+      <option value="all">All Collections</option>
+    </select>
+    <a href="dependent.html" class="admin-link">
+      <svg style="width:13px;height:13px;fill:currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.56l2.72 2.72a.75.75 0 1 1-1.06 1.06l-4-4a.75.75 0 0 1 0-1.06l4-4a.75.75 0 0 1 1.06 1.06L5.56 9.25H16.25A.75.75 0 0 1 17 10Z" fill="currentColor"/></svg>
+      Admin
+    </a>
+  </div>
+</header>
+
+<div class="sf-body">
+
+  <!-- Filter sidebar -->
+  <aside class="filter-sidebar">
+    <div class="filter-sidebar-hd">
+      <h2>Find the Right Part</h2>
+      <p id="filter-set-name">Select your vehicle to filter parts</p>
+    </div>
+    <div class="filter-sidebar-bd" id="filter-widget"></div>
+  </aside>
+
+  <!-- Products -->
+  <section class="products-area">
+    <div class="products-header">
+      <p class="products-count" id="products-count"></p>
+      <button class="clear-filters-btn hidden" id="clear-btn" onclick="resetFilters()">Clear filters</button>
+    </div>
+    <div class="products-grid" id="products-grid"></div>
+  </section>
+
+</div>
+
+<script src="products.js"></script>
+<script>
+const products = (typeof DEMO_PRODUCTS !== 'undefined') ? DEMO_PRODUCTS : [];
+const STORAGE_KEY = 'findterDependentFilters';
+
+let filterSets = [];
+let currentPage = 'hp';
+let selections = {}; // stageId → selected value
+
+// ── Load filter sets ──────────────────────────────────────────────────────────
+function loadFilterSets(){
+  try { const s = localStorage.getItem(STORAGE_KEY); filterSets = s ? JSON.parse(s) : []; }
+  catch(e){ filterSets = []; }
+}
+
+// ── Sync when admin saves ─────────────────────────────────────────────────────
+window.addEventListener('storage', e => {
+  if(e.key === STORAGE_KEY){ loadFilterSets(); selections = {}; render(); }
+});
+
+// ── Core routing logic (same as admin) ────────────────────────────────────────
+function getNextStageId(set, stageId, selectedVal){
+  const stage = set.stages.find(s => s.id === stageId);
+  if(!stage) return null;
+  if(selectedVal && stage.conditions && stage.conditions.length){
+    const match = stage.conditions.find(c => c.values.includes(selectedVal));
+    if(match) return match.nextStage || null;
+  }
+  if('defaultNext' in stage) return stage.defaultNext || null;
+  const idx = set.stages.findIndex(s => s.id === stageId);
+  return (idx >= 0 && idx < set.stages.length - 1) ? set.stages[idx + 1].id : null;
+}
+
+// ── Get the active filter set for current page ────────────────────────────────
+function getActiveFilterSet(){
+  return filterSets.find(f => {
+    if(!f.enabled) return false;
+    if(currentPage === 'hp') return f.applyHP;
+    if(currentPage === 'all') return f.applyAll;
+    return f.specificCols && f.specificCols.includes(currentPage);
+  }) || null;
+}
+
+// ── Filter products based on selections ──────────────────────────────────────
+function getFilteredProducts(activeSet){
+  if(!activeSet || !Object.keys(selections).length) return products;
+  let result = [...products];
+  let curId = activeSet.stages[0].id;
+  const seen = new Set();
+  while(curId && !seen.has(curId)){
+    seen.add(curId);
+    const st = activeSet.stages.find(s => s.id === curId);
+    if(!st) break;
+    const sel = selections[curId];
+    if(sel) result = result.filter(p => String(p[st.source]) === String(sel));
+    else break;
+    curId = getNextStageId(activeSet, curId, sel);
+  }
+  return result;
+}
+
+// ── Handle filter selection ───────────────────────────────────────────────────
+function selectValue(stageId, val, activeSet){
+  selections[stageId] = val;
+  // Clear downstream selections
+  const seen = new Set(); let curId = getNextStageId(activeSet, stageId, val);
+  while(curId && !seen.has(curId)){ seen.add(curId); delete selections[curId]; curId = getNextStageId(activeSet, curId, selections[curId]); }
+  render();
+}
+
+function clearFromStage(stageId, activeSet){
+  delete selections[stageId];
+  // Clear all downstream
+  const seen = new Set(); let curId = stageId;
+  while(curId && !seen.has(curId)){
+    seen.add(curId); const st = activeSet.stages.find(s => s.id === curId);
+    if(!st) break; delete selections[curId]; curId = getNextStageId(activeSet, curId, null);
+  }
+  render();
+}
+
+function resetFilters(){ selections = {}; render(); }
+function changePage(p){ currentPage = p; selections = {}; render(); }
+
+// ── Render filter widget ──────────────────────────────────────────────────────
+function renderFilterWidget(activeSet){
+  const widget = document.getElementById('filter-widget');
+  const nameEl = document.getElementById('filter-set-name');
+
+  if(!activeSet){
+    nameEl.textContent = 'No filter set active for this page';
+    widget.innerHTML = `<div class="no-filter"><p>No dependent filter is configured for this page.<br><a href="dependent.html">Open Admin</a> to create one, then come back here.</p></div>`;
+    return;
+  }
+
+  nameEl.textContent = activeSet.name;
+  let html = '';
+  const completedStageIds = [];
+
+  // Walk the selection chain to find completed and active steps
+  let curId = activeSet.stages[0].id;
+  const seen = new Set();
+  while(curId && !seen.has(curId)){
+    seen.add(curId);
+    const st = activeSet.stages.find(s => s.id === curId);
+    if(!st) break;
+    const sel = selections[curId];
+    if(sel){
+      completedStageIds.push({stageId: curId, label: st.label, val: sel});
+      curId = getNextStageId(activeSet, curId, sel);
+    } else {
+      // This is the active (current) step
+      // Render completed steps first as summaries
+      html += completedStageIds.map(cs => `
+        <div class="filter-summary">
+          <span class="filter-summary-label">${escapeHtml(cs.label)}</span>
+          <span class="filter-summary-val">${escapeHtml(cs.val)}</span>
+          <button class="filter-clear-btn" onclick="clearFromStage('${cs.stageId}', getActiveFilterSet())" title="Change">
+            <svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 20 20"><path d="m11.06 10 3.22-3.22a.75.75 0 0 0-1.06-1.06L10 8.94 6.78 5.72a.75.75 0 0 0-1.06 1.06L8.94 10l-3.22 3.22a.75.75 0 1 0 1.06 1.06L10 11.06l3.22 3.22a.75.75 0 1 0 1.06-1.06L11.06 10Z" fill="currentColor"/></svg>
+          </button>
+        </div>`).join('');
+      if(completedStageIds.length) html += '<div class="filter-divider"></div>';
+
+      // Render active step
+      const vals = [...new Set(products.map(p => p[st.source]).filter(Boolean))].sort();
+      html += `<div class="filter-step">
+        <div class="filter-step-lbl">${escapeHtml(st.label)}</div>
+        <div class="filter-opts">
+          ${vals.map(v => `
+            <label class="filter-opt${sel === v ? ' active' : ''}">
+              <input type="radio" name="sf-${curId}" ${sel === v ? 'checked' : ''} onchange="selectValue('${curId}','${escapeHtml(v)}',getActiveFilterSet())">
+              ${escapeHtml(v)}
+            </label>`).join('')}
+        </div>
+      </div>`;
+      break;
+    }
+  }
+
+  // If all steps are completed (no active step left = terminal), show summary only
+  if(!html){
+    html = completedStageIds.map(cs => `
+      <div class="filter-summary">
+        <span class="filter-summary-label">${escapeHtml(cs.label)}</span>
+        <span class="filter-summary-val">${escapeHtml(cs.val)}</span>
+        <button class="filter-clear-btn" onclick="clearFromStage('${cs.stageId}', getActiveFilterSet())" title="Change">
+          <svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 20 20"><path d="m11.06 10 3.22-3.22a.75.75 0 0 0-1.06-1.06L10 8.94 6.78 5.72a.75.75 0 0 0-1.06 1.06L8.94 10l-3.22 3.22a.75.75 0 1 0 1.06 1.06L10 11.06l3.22 3.22a.75.75 0 1 0 1.06-1.06L11.06 10Z" fill="currentColor"/></svg>
+        </button>
+      </div>`).join('');
+  }
+
+  widget.innerHTML = html + (Object.keys(selections).length ? `<div class="filter-reset"><button onclick="resetFilters()">Reset Filters</button></div>` : '');
+}
+
+// ── Render product grid ───────────────────────────────────────────────────────
+const VENDOR_COLORS = {
+  Bosch:'#1e40af', Brembo:'#dc2626', TRW:'#b45309', 'K&N':'#15803d', Fram:'#c2410c',
+  Bilstein:'#1d4ed8', Monroe:'#0f766e', NGK:'#6d28d9', Gates:'#065f46', Denso:'#7c3aed',
+  ACDelco:'#991b1b', Hella:'#d97706', MagnaFlow:'#374151', SKF:'#1e3a8a', Timken:'#92400e',
+  Mishimoto:'#0e7490',
+};
+
+function renderProducts(filtered){
+  const grid = document.getElementById('products-grid');
+  const countEl = document.getElementById('products-count');
+  const clearBtn = document.getElementById('clear-btn');
+
+  countEl.innerHTML = `<strong>${filtered.length}</strong> of <strong>${products.length}</strong> parts`;
+  clearBtn.classList.toggle('hidden', !Object.keys(selections).length);
+
+  if(!filtered.length){
+    grid.innerHTML = `<div class="no-results">
+      <svg style="width:40px;height:40px;fill:#d1d5db;margin:0 auto" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M13.74 12.68a6.5 6.5 0 1 1 1.06-1.06l3.26 3.27a.75.75 0 1 1-1.06 1.06l-3.26-3.27Zm.76-5.18a5 5 0 1 1-10 0 5 5 0 0 1 10 0Z" fill="currentColor"/></svg>
+      <p style="color:#6b7280">No parts match your selections.</p>
+      <button class="clear-filters-btn" onclick="resetFilters()" style="margin-top:8px;color:#3b82f6">Clear filters</button>
+    </div>`;
+    return;
+  }
+
+  const show = filtered.slice(0, 48);
+  grid.innerHTML = show.map(p => {
+    const vColor = VENDOR_COLORS[p.vendor] || '#374151';
+    const vBg = vColor + '15';
+    return `<div class="prod-card">
+      <div class="prod-img">
+        <svg style="width:40px;height:40px;fill:#d1d5db" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2 3.5A1.5 1.5 0 0 1 3.5 2h13A1.5 1.5 0 0 1 18 3.5v10A1.5 1.5 0 0 1 16.5 15H13l.72.72a.75.75 0 0 1-1.06 1.06L11 15.06l-1.66 1.72a.75.75 0 1 1-1.06-1.06L9 15H3.5A1.5 1.5 0 0 1 2 13.5v-10ZM3.5 3.5v10h13v-10h-13Z" fill="currentColor"/></svg>
+      </div>
+      <div class="prod-body">
+        <span class="prod-vendor" style="background:${vBg};color:${vColor}">${escapeHtml(p.vendor)}</span>
+        <p class="prod-title">${escapeHtml(p.title)}</p>
+        <p class="prod-meta">${escapeHtml(p.collection)} · ${escapeHtml(p.year)} ${escapeHtml(p.make)} ${escapeHtml(p.model)}</p>
+        <div class="prod-footer">
+          <span class="prod-price">$${p.price.toFixed(2)}</span>
+          <button class="prod-add">Add to Cart</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  if(filtered.length > 48) grid.innerHTML += `<div style="grid-column:1/-1;text-align:center;padding:16px;font-size:13px;color:#9ca3af">Showing 48 of ${filtered.length} results — apply more filters to narrow down.</div>`;
+}
+
+// ── Main render ───────────────────────────────────────────────────────────────
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function render(){
+  const active = getActiveFilterSet();
+  renderFilterWidget(active);
+  renderProducts(getFilteredProducts(active));
+}
+
+// ── Populate page selector with collections ───────────────────────────────────
+function buildPageSelector(){
+  const sel = document.getElementById('page-sel');
+  const collections = [...new Set(products.map(p => p.collection))].sort();
+  collections.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = 'Collection: ' + c;
+    sel.appendChild(opt);
+  });
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+loadFilterSets();
+buildPageSelector();
+render();
+</script>
+</body>
+</html>
