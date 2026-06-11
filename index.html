@@ -314,29 +314,11 @@ function loadFromStorage(){
 }
 
 // ── Sidebar ──────────────────────────────────────────────────────────────────
-const NAV=[
-  {id:'filter',label:'Filter'},{id:'search',label:'Search'},{id:'metafield',label:'Metafield'},
-  {id:'ymm',label:'Year Make Model'},{id:'grid',label:'Filter & Product Grid Design'},
-  {id:'settings',label:'Settings'},{id:'analytics',label:'Analytics'},{id:'advanced',label:'Advanced Features'},
-];
-const ENABLED=new Set(['filter','settings','metafield','ymm']);
 const ACTIVE='filter';
 let sbCol=false;
 
 function renderNav(){
-  $('nav').innerHTML=NAV.map(n=>{
-    const en=ENABLED.has(n.id),act=n.id===ACTIVE;
-    return `<button data-nav="${n.id}" ${en?'':'disabled'} class="nav-btn${act?' act':''}" title="${n.label}"><span class="nav-lbl">${escapeHtml(n.label)}</span></button>`;
-  }).join('');
-  $('nav').querySelectorAll('[data-nav]').forEach(b=>{
-    if(!ENABLED.has(b.dataset.nav))return;
-    b.onclick=()=>{
-      const v=b.dataset.nav;
-      if(v==='settings')location.href='index.html';
-      else if(v==='metafield')location.href='Metafield.html';
-      else if(v==='ymm')location.href='YearMakeModel.html';
-    };
-  });
+  $('nav').innerHTML=`<button class="nav-btn act" title="Dependent Filters"><span class="nav-lbl">Dependent Filters</span></button>`;
   updateSb();
 }
 function updateSb(){
