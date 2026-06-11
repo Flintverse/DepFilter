@@ -107,7 +107,7 @@ html,body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;backgr
       <option value="hp">Homepage</option>
       <option value="all">All Collections</option>
     </select>
-    <a href="dependent.html" class="admin-link">
+    <a href="index.html" class="admin-link">
       <svg style="width:13px;height:13px;fill:currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.56l2.72 2.72a.75.75 0 1 1-1.06 1.06l-4-4a.75.75 0 0 1 0-1.06l4-4a.75.75 0 0 1 1.06 1.06L5.56 9.25H16.25A.75.75 0 0 1 17 10Z" fill="currentColor"/></svg>
       Admin
     </a>
@@ -227,7 +227,7 @@ function renderFilterWidget(activeSet){
 
   if(!activeSet){
     nameEl.textContent = 'No filter set active for this page';
-    widget.innerHTML = `<div class="no-filter"><p>No dependent filter is configured for this page.<br><a href="dependent.html">Open Admin</a> to create one, then come back here.</p></div>`;
+    widget.innerHTML = `<div class="no-filter"><p>No dependent filter is configured for this page.<br><a href="index.html">Open Admin</a> to create one, then come back here.</p></div>`;
     return;
   }
 
